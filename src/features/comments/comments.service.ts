@@ -227,7 +227,7 @@ export async function getMyComments(
   context: AuthContext,
   data: GetMyCommentsInput,
 ) {
-  const comments = await CommentRepo.getCommentsByUserId(
+  return await CommentRepo.getCommentsByUserId(
     context.db,
     context.session.user.id,
     {
@@ -236,8 +236,6 @@ export async function getMyComments(
       status: data.status,
     },
   );
-
-  return ok(comments);
 }
 
 // ============ Admin Service Methods ============
@@ -263,7 +261,7 @@ export async function getAllComments(
     }),
   ]);
 
-  return ok({ items, total });
+  return { items, total };
 }
 
 export async function moderateComment(
@@ -355,5 +353,5 @@ export async function updateCommentStatus(
 }
 
 export async function getUserCommentStats(context: DbContext, userId: string) {
-  return ok(await CommentRepo.getUserCommentStats(context.db, userId));
+  return await CommentRepo.getUserCommentStats(context.db, userId);
 }

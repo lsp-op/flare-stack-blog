@@ -17,17 +17,7 @@ export function useFriendLinks() {
     mutationFn: async (input: Parameters<typeof submitFriendLinkFn>[0]) => {
       const result = await submitFriendLinkFn(input);
       if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("请先登录后再提交");
-          case "DUPLICATE_URL":
-            throw new Error("该站点URL已提交过申请");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
+        throw new Error("该站点URL已提交过申请");
       }
       return result.data;
     },
@@ -53,21 +43,7 @@ export function useAdminFriendLinks() {
 
   const createMutation = useMutation({
     mutationFn: async (input: Parameters<typeof createFriendLinkFn>[0]) => {
-      const result = await createFriendLinkFn(input);
-      if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("登录状态已失效，请重新登录");
-          case "PERMISSION_DENIED":
-            throw new Error("权限不足，仅管理员可操作");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
-      }
-      return result.data;
+      return await createFriendLinkFn(input);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: FRIEND_LINKS_KEYS.all });
@@ -80,19 +56,7 @@ export function useAdminFriendLinks() {
     mutationFn: async (input: Parameters<typeof updateFriendLinkFn>[0]) => {
       const result = await updateFriendLinkFn(input);
       if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("登录状态已失效，请重新登录");
-          case "PERMISSION_DENIED":
-            throw new Error("权限不足，仅管理员可操作");
-          case "NOT_FOUND":
-            throw new Error("友链不存在");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
+        throw new Error("友链不存在");
       }
       return result.data;
     },
@@ -107,19 +71,7 @@ export function useAdminFriendLinks() {
     mutationFn: async (input: Parameters<typeof approveFriendLinkFn>[0]) => {
       const result = await approveFriendLinkFn(input);
       if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("登录状态已失效，请重新登录");
-          case "PERMISSION_DENIED":
-            throw new Error("权限不足，仅管理员可操作");
-          case "NOT_FOUND":
-            throw new Error("友链不存在");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
+        throw new Error("友链不存在");
       }
       return result.data;
     },
@@ -134,19 +86,7 @@ export function useAdminFriendLinks() {
     mutationFn: async (input: Parameters<typeof rejectFriendLinkFn>[0]) => {
       const result = await rejectFriendLinkFn(input);
       if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("登录状态已失效，请重新登录");
-          case "PERMISSION_DENIED":
-            throw new Error("权限不足，仅管理员可操作");
-          case "NOT_FOUND":
-            throw new Error("友链不存在");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
+        throw new Error("友链不存在");
       }
       return result.data;
     },
@@ -161,19 +101,7 @@ export function useAdminFriendLinks() {
     mutationFn: async (input: Parameters<typeof deleteFriendLinkFn>[0]) => {
       const result = await deleteFriendLinkFn(input);
       if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("登录状态已失效，请重新登录");
-          case "PERMISSION_DENIED":
-            throw new Error("权限不足，仅管理员可操作");
-          case "NOT_FOUND":
-            throw new Error("友链不存在");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
+        throw new Error("友链不存在");
       }
       return result.data;
     },

@@ -8,7 +8,6 @@ import {
   waitForBackgroundTasks,
 } from "tests/test-utils";
 import * as FriendLinkService from "./friend-links.service";
-import { unwrap } from "@/lib/errors";
 
 describe("FriendLinkService", () => {
   let adminContext: ReturnType<typeof createAdminTestContext>;
@@ -119,8 +118,8 @@ describe("FriendLinkService", () => {
         siteUrl: "https://admin-added.com",
       });
 
-      expect(result.data?.status).toBe("approved");
-      expect(result.data?.userId).toBeNull();
+      expect(result.status).toBe("approved");
+      expect(result.userId).toBeNull();
     });
 
     it("should invalidate cache on creation", async () => {
@@ -211,7 +210,7 @@ describe("FriendLinkService", () => {
       });
 
       const updated = await FriendLinkService.updateFriendLink(adminContext, {
-        id: created.data!.id,
+        id: created.id,
         siteName: "Updated Name",
         description: "Updated description",
       });
@@ -231,7 +230,7 @@ describe("FriendLinkService", () => {
 
       // Only update siteName
       const updated = await FriendLinkService.updateFriendLink(adminContext, {
-        id: created.data!.id,
+        id: created.id,
         siteName: "New Name",
       });
 
@@ -249,16 +248,14 @@ describe("FriendLinkService", () => {
       });
 
       const result = await FriendLinkService.deleteFriendLink(adminContext, {
-        id: created.data!.id,
+        id: created.id,
       });
 
       expect(result.data?.success).toBe(true);
 
       // Verify it's actually deleted
-      const list = unwrap(
-        await FriendLinkService.getAllFriendLinks(adminContext, {}),
-      );
-      expect(list.items.find((l) => l.id === created.data!.id)).toBeUndefined();
+      const list = await FriendLinkService.getAllFriendLinks(adminContext, {});
+      expect(list.items.find((l) => l.id === created.id)).toBeUndefined();
     });
 
     it("should return NOT_FOUND for non-existent ID", async () => {
@@ -311,19 +308,21 @@ describe("FriendLinkService", () => {
       });
 
       // Query by status
-      const approvedList = unwrap(
-        await FriendLinkService.getAllFriendLinks(adminContext, {
+      const approvedList = await FriendLinkService.getAllFriendLinks(
+        adminContext,
+        {
           status: "approved",
-        }),
+        },
       );
       expect(approvedList.items.every((l) => l.status === "approved")).toBe(
         true,
       );
 
-      const rejectedList = unwrap(
-        await FriendLinkService.getAllFriendLinks(adminContext, {
+      const rejectedList = await FriendLinkService.getAllFriendLinks(
+        adminContext,
+        {
           status: "rejected",
-        }),
+        },
       );
       expect(rejectedList.items.every((l) => l.status === "rejected")).toBe(
         true,
@@ -337,9 +336,7 @@ describe("FriendLinkService", () => {
         contactEmail: "me@test.com",
       });
 
-      const myLinks = unwrap(
-        await FriendLinkService.getMyFriendLinks(userContext),
-      );
+      const myLinks = await FriendLinkService.getMyFriendLinks(userContext);
 
       expect(myLinks.length).toBe(1);
       expect(myLinks[0].siteName).toBe("My Site");

@@ -7,10 +7,9 @@ import {
   GetRepliesByRootIdInputSchema,
 } from "@/features/comments/comments.schema";
 import * as CommentService from "@/features/comments/comments.service";
-import { err } from "@/lib/errors";
 import {
+  authMiddleware,
   createRateLimitMiddleware,
-  hasSession,
   sessionMiddleware,
   turnstileMiddleware,
 } from "@/lib/middlewares";
@@ -56,16 +55,13 @@ export const createCommentFn = createServerFn({
       key: "comments:create",
     }),
     turnstileMiddleware,
-    sessionMiddleware,
+    authMiddleware,
   ])
   .inputValidator(CreateCommentInputSchema)
-  .handler(async ({ data, context }) => {
-    if (!hasSession(context)) {
-      return err({ reason: "UNAUTHENTICATED" });
-    }
-
-    return await CommentService.createComment(context, data);
-  });
+  .handler(
+    async ({ data, context }) =>
+      await CommentService.createComment(context, data),
+  );
 
 export const deleteCommentFn = createServerFn({
   method: "POST",
@@ -76,24 +72,18 @@ export const deleteCommentFn = createServerFn({
       interval: "1m",
       key: "comments:delete",
     }),
-    sessionMiddleware,
+    authMiddleware,
   ])
   .inputValidator(DeleteCommentInputSchema)
-  .handler(async ({ data, context }) => {
-    if (!hasSession(context)) {
-      return err({ reason: "UNAUTHENTICATED" });
-    }
-
-    return await CommentService.deleteComment(context, data);
-  });
+  .handler(
+    async ({ data, context }) =>
+      await CommentService.deleteComment(context, data),
+  );
 
 export const getMyCommentsFn = createServerFn()
-  .middleware([sessionMiddleware])
+  .middleware([authMiddleware])
   .inputValidator(GetMyCommentsInputSchema)
-  .handler(async ({ data, context }) => {
-    if (!hasSession(context)) {
-      return err({ reason: "UNAUTHENTICATED" });
-    }
-
-    return await CommentService.getMyComments(context, data);
-  });
+  .handler(
+    async ({ data, context }) =>
+      await CommentService.getMyComments(context, data),
+  );

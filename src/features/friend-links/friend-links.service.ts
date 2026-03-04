@@ -72,11 +72,9 @@ export async function submitFriendLink(
 }
 
 export async function getMyFriendLinks(context: AuthContext) {
-  return ok(
-    await FriendLinkRepo.getFriendLinksByUserId(
-      context.db,
-      context.session.user.id,
-    ),
+  return await FriendLinkRepo.getFriendLinksByUserId(
+    context.db,
+    context.session.user.id,
   );
 }
 
@@ -133,7 +131,7 @@ export async function createFriendLink(
 
   invalidateCache(context);
 
-  return ok(friendLink);
+  return friendLink;
 }
 
 export async function getAllFriendLinks(
@@ -151,7 +149,7 @@ export async function getAllFriendLinks(
     }),
   ]);
 
-  return ok({ items, total });
+  return { items, total };
 }
 
 export async function approveFriendLink(
@@ -206,7 +204,7 @@ export async function rejectFriendLink(
     data.id,
   );
   if (!friendLink) {
-    return err({ reason: "NOT_FOUND" as const });
+    return err({ reason: "NOT_FOUND" });
   }
 
   const updated = await FriendLinkRepo.updateFriendLink(context.db, data.id, {
@@ -250,7 +248,7 @@ export async function updateFriendLink(
     data.id,
   );
   if (!friendLink) {
-    return err({ reason: "NOT_FOUND" as const });
+    return err({ reason: "NOT_FOUND" });
   }
 
   const { id, ...updateData } = data;

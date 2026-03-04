@@ -16,8 +16,6 @@ export function useComments(postId?: number) {
       if (result.error) {
         const reason = result.error.reason;
         switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("请先登录后再评论");
           case "ROOT_COMMENT_NOT_FOUND":
           case "REPLY_TO_COMMENT_NOT_FOUND":
             throw new Error("该评论已被删除，请刷新页面");
@@ -68,8 +66,6 @@ export function useComments(postId?: number) {
       if (result.error) {
         const reason = result.error.reason;
         switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("请先登录后再操作");
           case "COMMENT_NOT_FOUND":
             throw new Error("评论不存在或已删除");
           case "PERMISSION_DENIED":
@@ -126,20 +122,7 @@ export function useAdminComments() {
     mutationFn: async (input: Parameters<typeof moderateCommentFn>[0]) => {
       const result = await moderateCommentFn(input);
       if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("登录状态已失效，请重新登录");
-          case "PERMISSION_DENIED":
-            throw new Error("权限不足，仅管理员可操作");
-
-          case "COMMENT_NOT_FOUND":
-            throw new Error("评论不存在");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
+        throw new Error("评论不存在");
       }
       return result.data;
     },
@@ -158,20 +141,7 @@ export function useAdminComments() {
     mutationFn: async (input: Parameters<typeof adminDeleteCommentFn>[0]) => {
       const result = await adminDeleteCommentFn(input);
       if (result.error) {
-        const reason = result.error.reason;
-        switch (reason) {
-          case "UNAUTHENTICATED":
-            throw new Error("登录状态已失效，请重新登录");
-          case "PERMISSION_DENIED":
-            throw new Error("权限不足，仅管理员可操作");
-
-          case "COMMENT_NOT_FOUND":
-            throw new Error("评论不存在");
-          default: {
-            reason satisfies never;
-            throw new Error("未知错误");
-          }
-        }
+        throw new Error("评论不存在");
       }
       return result.data;
     },
