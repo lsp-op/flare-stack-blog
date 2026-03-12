@@ -41,9 +41,7 @@ export const CommentsTable = sqliteTable(
     postId: integer("post_id")
       .notNull()
       .references(() => PostsTable.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "set null" }),
+    userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
 
     createdAt,
     updatedAt,
